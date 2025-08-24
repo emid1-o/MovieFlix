@@ -51,4 +51,11 @@ public class CategoryController {
         categoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<CategoryResponse> update(@RequestBody CategoryRequest request, @PathVariable Long id){
+        Category newCategory = CategoryMapper.toCategory(request);
+        Category updatedCategory = categoryService.update(newCategory, id);
+        return ResponseEntity.ok(CategoryMapper.toCategoryResponse(updatedCategory));
+    }
 }

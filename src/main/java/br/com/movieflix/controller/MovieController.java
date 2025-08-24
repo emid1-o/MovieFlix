@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/movieflix/movie")
@@ -37,5 +39,36 @@ public class MovieController {
         return movieService.findById(id)
                 .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovieResponse> update(@RequestBody MovieRequest request,@PathVariable Long id){
+        Movie movie = MovieMapper.toMovie(request);
+
+        return movieService.update(movie, id).map(movie1 ->
+            ResponseEntity.ok(MovieMapper.toMovieResponse(movie1))
+        ).orElse(ResponseEntity.notFound().build());
+
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        movieService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<List<MovieResponse>> findByCategory(@PathVariable Long id){
+
+        Optional<List<Movie>> lista = movieService.findByCategory(id);
+        List<MovieResponse> resposta = new ArrayList<>();
+        if (lista.isPresent()){
+            for (int i= 0; i < lista.get().size(); i++){
+                resposta.add(MovieMapper.toMovieResponse(lista.get().get(i)));
+            }
+            return ResponseEntity.ok(resposta);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
