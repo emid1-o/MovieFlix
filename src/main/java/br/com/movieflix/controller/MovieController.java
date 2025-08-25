@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/movieflix/movie")
@@ -53,22 +52,25 @@ public class MovieController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
-        movieService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if (movieService.findById(id).isPresent()){
+            movieService.delete(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @GetMapping("/category/{id}")
     public ResponseEntity<List<MovieResponse>> findByCategory(@PathVariable Long id){
 
-        Optional<List<Movie>> lista = movieService.findByCategory(id);
+        List<Movie> lista = movieService.findByCategory(id);
         List<MovieResponse> resposta = new ArrayList<>();
-        if (lista.isPresent()){
-            for (int i= 0; i < lista.get().size(); i++){
-                resposta.add(MovieMapper.toMovieResponse(lista.get().get(i)));
+        if (!lista.isEmpty()){
+            for (Movie movie : lista) {
+                resposta.add(MovieMapper.toMovieResponse(movie));
             }
             return ResponseEntity.ok(resposta);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

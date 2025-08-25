@@ -83,16 +83,14 @@ public class MovieService {
     }
 
     public void delete(Long id){
+
         movieRepository.deleteById(id);
+
     }
 
-    public Optional<List<Movie>> findByCategory(Long categoryId){
+    public List<Movie> findByCategory(Long categoryId){
 
-        Optional<List<Movie>> lista = movieRepository.findByCategoryId(categoryId);
+        return movieRepository.findByCategories_Id(categoryId);
 
-        if(lista.isPresent()){
-            return lista;
-        }
-        return Optional.empty();
     }
 }
