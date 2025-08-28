@@ -15,3 +15,7 @@ spring:
 
   flyway:
     enabled: true
+
+movieflix:
+  security:
+    secret: "palavra-secreta"
